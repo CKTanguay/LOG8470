@@ -1,0 +1,14 @@
+
+
+proctype mutualExclusion() {
+	do
+	:: 
+	od
+}
+
+
+init {
+	byte nbProcess = 4;
+	byte flag[nbProcess];
+	
+}
