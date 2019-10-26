@@ -1,14 +1,45 @@
+/* Constants */
+#define N 4
 
+/* Global variables */
+byte I;
+byte flag[N];
 
-proctype mutualExclusion() {
+proctype mutualExclusion(byte index) {
 	do
-	:: 
+	:: flag[index] = 1;
 	od
 }
 
 
 init {
-	byte nbProcess = 4;
-	byte flag[nbProcess];
-	
+	byte proc;
+	byte i;
+	byte Ini[4];	/* N<=4 randomize the process numbers */
+	atomic {
+
+		I = 1;	/* pick a number to be assigned 1..N */
+		do
+		:: I <= N ->
+			if	/* non-deterministic choice */
+			:: Ini[0] == 0 && N >= 1 -> Ini[0] = I
+			:: Ini[1] == 0 && N >= 2 -> Ini[1] = I
+			:: Ini[2] == 0 && N >= 3 -> Ini[2] = I
+			:: Ini[3] == 0 && N >= 4 -> Ini[3] = I
+			fi;
+			I++
+		:: I > N ->	/* assigned all numbers 1..N */
+			break
+		od;
+
+		proc = 1;
+		i = 0;
+		do
+		:: proc <= N ->
+			run mutualExclusion(Ini[i]);
+			proc++;
+			i++;
+		:: proc > N -> break
+		od
+	}
 }
