@@ -1,0 +1,26 @@
+warning: for p.o. reduction to be valid the never claim must be stutter-invariant
+(never claims generated from LTL formulae are stutter-invariant)
+pan: claim violated! (at depth 56)
+pan: wrote pan_in.trail
+(Spin Version 4.0.4 -- 12 April 2003)
+Warning: Search not completed
+	+ Partial Order Reduction
+
+Full statespace search for:
+	never-claim         	+
+	assertion violations	+ (if within scope of claim)
+	acceptance   cycles 	+ (fairness disabled)
+	invalid endstates	- (disabled by never-claim)
+
+State-vector 48 byte, depth reached 56, errors: 1
+      19 states, stored
+       0 states, matched
+      19 transitions (= stored+matched)
+      19 atomic steps
+hash conflicts: 0 (resolved)
+(max size 2^19 states)
+
+4.879 	memory usage (Mbyte)
+
+0.00user 0.00system 0:00.02elapsed 31%CPU (0avgtext+0avgdata 6292maxresident)k
+184inputs+16outputs (1major+1222minor)pagefaults 0swaps
