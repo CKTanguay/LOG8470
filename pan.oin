@@ -69,6 +69,8 @@ proctype mutualExclusion(byte index) {
 		/* LIGNE 10 SECTION CRITIQUE */
 		procEnSectionCritique++;
 	
+		//procEnSectionCritique--;
+
 		/* LIGNE 11 */
 
 		counter = index + 1;	
@@ -120,3 +122,4 @@ init {
 		od
 	}
 }
+

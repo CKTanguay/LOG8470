@@ -4,11 +4,13 @@
 /* Global variables */
 byte I;
 byte flag[N];
-byte counter;
-byte counter2;
 
 proctype mutualExclusion(byte index) {
-	flag[index] = 1;
+	
+	byte counter;
+	byte counter2;
+
+	atomic { flag[index] = 1; } 
 	
 	/* LIGNE 3*/
 	counter = 0;
@@ -23,18 +25,22 @@ proctype mutualExclusion(byte index) {
 	:: counter >= N ->
 		break
 	od;
-
-	/*LIGNE 4*/
-	flag[index] = 3;
 	
-	counter = 0;
+	/*LIGNE 4*/
+	atomic { flag[index] = 3; }
+	
+	atomic { counter = 0; }
+
 	/* LIGNE 5 */
+
+
+	printf("TEST");
 	do
 	:: counter < N ->
 		if
 		:: flag[counter] == 1 ->
 			/* LIGNE 6 */
-			flag[index] = 2;
+			atomic { flag[index] = 2; } 
 			counter2 = 0;
 			/* LIGNE 7*/
 			do
@@ -52,7 +58,7 @@ proctype mutualExclusion(byte index) {
 	od;
 	
 	/* LIGNE 8 */
-	flag[index] = 4;
+	atomic { flag[index] = 4; }
 	
 	/* LIGNE 9 */
 	counter = 0;
