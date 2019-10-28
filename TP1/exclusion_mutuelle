@@ -5,6 +5,9 @@
 byte I;
 byte flag[N];
 byte procEnSectionCritique;
+byte sctCritique[N];
+byte procLineEleven[N];
+byte procLineTwelve[N];
 
 proctype mutualExclusion(byte index) {
 	do
@@ -68,9 +71,10 @@ proctype mutualExclusion(byte index) {
 
 		/* LIGNE 10 SECTION CRITIQUE */
 		procEnSectionCritique++;
-	
+		
+		atomic { sctCritique[index] = 1; }
 		/* LIGNE 11 */
-
+		atomic { procLineEleven[index] = 1; }
 		counter = index + 1;	
 
 		do
@@ -80,11 +84,18 @@ proctype mutualExclusion(byte index) {
 		od;
 	
 		counter = 0;
+		
+		atomic { procLineEleven[index] = 0; }
 	
 		/* LIGNE 12 */
+		atomic { sctCritique[index] = 0; }
 		procEnSectionCritique--;
-
+		
+		atomic { procLineTwelve[index] = 1; }
+		
 		atomic { flag[index] = 0; }
+
+		atomic { procLineTwelve[index] = 0; }
 	od;
 }
 
@@ -93,6 +104,7 @@ init {
 	byte proc;
 	byte i;
 	byte Ini[4];	/* N<=4 randomize the process numbers */
+	procEnSectionCritique=0;
 	atomic {
 
 		I = 0;	/* pick a number to be assigned 1..N */
