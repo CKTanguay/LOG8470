@@ -4,86 +4,87 @@
 /* Global variables */
 byte I;
 byte flag[N];
-byte counter;
-byte counter2;
+bool procEnSectionCritique;
 
 proctype mutualExclusion(byte index) {
-	flag[index] = 1;
+	
+	byte counter;
+	counter = 0;
+	
+	/* LIGNE 2 */ 
+
+	atomic { flag[index] = 1; } 
 	
 	/* LIGNE 3*/
-	counter = 0;
+	
 	do
-	:: counter < N ->
-		if
-		:: flag[counter] >= 3 ->
-			counter = 0;
-		:: flag[counter] < 3 ->
-			counter++;
-		fi;
-	:: counter >= N ->
-		break
+	:: counter < N && flag[counter] < 3 -> counter++
+	:: counter < N && flag[counter] >= 3 -> counter = 0
+	:: counter >= N -> break
 	od;
 
 	/*LIGNE 4*/
-	flag[index] = 3;
 	
-	counter = 0;
+	atomic { flag[index] = 3; }
+		
 	/* LIGNE 5 */
+
+	counter = 0;
+
 	do
-	:: counter < N ->
-		if
-		:: flag[counter] == 1 ->
-			/* LIGNE 6 */
-			flag[index] = 2;
-			counter2 = 0;
-			/* LIGNE 7*/
-			do
-			:: counter2 < N ->
-				if
-				:: flag[counter2] == 4 -> break
-				fi;
-				counter2++;
-			:: counter2 >= N ->
-				counter2 = 0;
-			od;
-		fi;
-	:: counter >= N ->
-		break
+	:: counter < N && flag[counter] == 1 -> goto L1
+	:: counter < N && flag[counter] != 1 -> counter++
+	:: counter >= N -> goto L2
 	od;
+
+L1:	/* LIGNE 6 */
 	
+	atomic { flag[index] = 2; } 
+
+	/* LIGNE 7 */
+
+	counter = 0;
+
+	do
+	:: counter < N && flag[counter] == 4 -> goto L2
+	:: counter < N && flag[counter] != 4 -> counter++
+	:: counter >= N -> counter = 0
+	od;
+
+L2: 
 	/* LIGNE 8 */
-	flag[index] = 4;
-	
+	atomic { flag[index] = 4; }
+
 	/* LIGNE 9 */
-	counter = 0;
-	do
-	:: counter < N ->
-		if
-		:: flag[counter] >= 2 ->
-			counter = 0;
-		:: flag[counter] < 2 ->
-			counter++;
-		fi;
-	:: counter >= N ->
-		break
-	od;
 	
-	/* LIGNE 10-11 SECTION CRITIQUE */
 	counter = 0;
+
 	do
-	:: counter < N ->
-		if
-		:: flag[counter + 1] == 0 || flag[counter + 1] == 1 || flag[counter + 1] == 4 ->
-			counter++;
-		:: flag[counter + 1] == 2 || flag[counter +1] == 3 ->
-			counter = 0;
-		fi;
-	:: counter >= N ->
-		break
+	:: counter < index && flag[counter] < 2 -> counter++
+	:: counter < index && flag[counter] >= 2 -> counter = 0
+	:: counter >= index -> break
 	od;
+
+	/* LIGNE 10 SECTION CRITIQUE */
+	procEnSectionCritique++;
+	
+	procEnSectionCritique--;
+
+	/* LIGNE 11 */
+
+	counter = index + 1;	
+
+	do
+	:: counter < N && (flag[counter] == 0 || flag[counter] == 1 || flag[counter] == 4)  -> counter++
+	:: counter < N && (flag[counter] == 2 || flag[counter] == 3) -> counter = index + 1
+	:: counter >= N -> break
+	od;
+
+	counter = 0
 	
 	/* LIGNE 12 */
-	flag[index] = 0;
+
+	atomic { flag[index] = 0; }
 }
 
 
