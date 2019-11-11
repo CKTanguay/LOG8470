@@ -1,0 +1,12 @@
+-comment sauvegarder?
+
+-il est a 1,3 et je lui envoie un 1,2 pour décrémenter?
+
+- Quelle genre de modifications doivent etre apportées au modele afin de prevenir une decrementation?
+
+- concept de borné? -> peut pas retransmettre plus que x fois le meme message, sinon on passe au prochain?
+
+- est ce que les modifs de c) comprennent celles de b)?
+
+
+n>k sinon on le passe pas
